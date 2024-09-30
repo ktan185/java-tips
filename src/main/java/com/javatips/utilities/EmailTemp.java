@@ -1,4 +1,4 @@
-package com.javatips;
+package com.javatips.utilities;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -12,10 +12,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.Label;
-import com.google.api.services.gmail.model.ListLabelsResponse;
-import com.google.api.services.gmail.model.ListMessagesResponse;
-import com.google.api.services.gmail.model.Message;
+import com.javatips.Application;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,8 +22,8 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-public class Main {
-  /**
+public class EmailTemp {
+     /**
    * Application name.
    */
   private static final String APPLICATION_NAME = "Daily Java Tips";
@@ -56,7 +53,7 @@ public class Main {
   private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
       throws IOException {
     // Load client secrets.
-    InputStream in = Main.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+    InputStream in = Application.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
     if (in == null) {
       throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
     }
@@ -81,19 +78,5 @@ public class Main {
     Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
         .setApplicationName(APPLICATION_NAME)
         .build();
-
-
-    // Print the labels in the user's account.
-    String user = "me";
-    ListMessagesResponse listResponse = service.users().messages().list(user).execute();
-    List<Message> messages = listResponse.getMessages();
-    if (messages.isEmpty()) {
-      System.out.println("No Messages found.");
-    } else {
-      System.out.println("Messages:");
-      for (Message message : messages) {
-        System.out.printf("- %s\n", message.getId());
-      }
-    }
   }
 }
