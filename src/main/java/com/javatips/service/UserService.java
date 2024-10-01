@@ -16,10 +16,10 @@ public class UserService {
     UserRepository userRepository;
 
     public void saveUser(User user) throws IllegalStateException {
-        Set<String> allEmailsInDatabase = getAllUserEmails();
+        Set<String> existingEmails = getAllUserEmails();
         String userEmail = user.getEmail();
-        if (allEmailsInDatabase.contains(userEmail)) {
-            throw new IllegalStateException("Email has already been signed up!");
+        if (existingEmails.contains(userEmail)) {
+            throw new IllegalStateException("This email has aready been taken!");
         }
         userRepository.save(user);
     }
@@ -27,5 +27,5 @@ public class UserService {
     public Set<String> getAllUserEmails() {
         return userRepository.findAll().stream().map(User::getEmail).collect(Collectors.toSet());
     }
-    
+
 }
