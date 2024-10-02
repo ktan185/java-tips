@@ -116,6 +116,11 @@
 			<artifactId>jvm-openai</artifactId>
 			<version>0.11.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>0.18.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

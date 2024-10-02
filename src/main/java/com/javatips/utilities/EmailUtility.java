@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Properties;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -24,7 +28,7 @@ public class EmailUtility {
      * @param toEmailAddress email address of the receiver
      * @param fromEmailAddress email address of the sender, the mailbox account
      * @param subject subject of the email
-     * @param bodyText body text of the email
+     * @param content html content of the email
      * @return the MimeMessage to be used to send email
      * @throws MessagingException - if a wrongly formatted address is
      * encountered.
@@ -32,7 +36,7 @@ public class EmailUtility {
     public static MimeMessage createEmail(String toEmailAddress,
             String fromEmailAddress,
             String subject,
-            String bodyText)
+            String content)
             throws MessagingException {
 
         Properties props = new Properties();
@@ -42,7 +46,7 @@ public class EmailUtility {
         email.setFrom(new InternetAddress(fromEmailAddress));
         email.addRecipient(RecipientType.TO, new InternetAddress(toEmailAddress));
         email.setSubject(subject);
-        email.setText(bodyText);
+        email.setContent(content, "text/html; charset=utf-8");
         return email;
     }
 
@@ -103,5 +107,12 @@ public class EmailUtility {
             System.err.println("Failed to send email: " + e.getDetails());
             throw e;
         }
+    }
+
+    private static String convertMarkDownToHtmlContent(String markdownContent) {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(markdownContent);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        return renderer.render(document);
     }
 }
