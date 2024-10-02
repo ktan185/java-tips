@@ -28,6 +28,7 @@ target/
 .vscode
 .env
 serviceKey.json
+credentials.json
 *credentials.json
 .DS_Store
 tokens
