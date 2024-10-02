@@ -36,7 +36,6 @@ public class CronController {
     public ResponseEntity<?> getDailyJavaTip(@CookieValue(value = "authToken", required = true) String authToken) {
 
         if (!authToken.equals(MASTERKEY)) {
-            System.out.println(MASTERKEY);
             return ResponseEntity.status(401).build();
         }
 
