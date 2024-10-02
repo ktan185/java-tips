@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.javatips.exceptions.JavaTipsInvalidModelException;
 import com.javatips.model.User;
 import com.javatips.service.UserService;
 
@@ -17,7 +18,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/signup")
+    @PostMapping("signup")
     public ResponseEntity<?> signUp(@RequestBody User user) {
         try {
             userService.saveUser(user);
@@ -25,7 +26,9 @@ public class UserController {
         } catch (IllegalStateException e) {
             // Return bad request if email has already been used.
             return ResponseEntity.status(409).build();
+        } catch (JavaTipsInvalidModelException e) {
+            return ResponseEntity.status(400).build();
         }
     }
-    
+
 }
