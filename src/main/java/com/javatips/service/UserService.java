@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.javatips.exceptions.JavaTipsInvalidModelException;
 import com.javatips.model.User;
 import com.javatips.repository.UserRepository;
 
@@ -15,12 +16,13 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public void saveUser(User user) throws IllegalStateException {
+    public void saveUser(User user) throws IllegalStateException, JavaTipsInvalidModelException {
         Set<String> existingEmails = getAllUserEmails();
         String userEmail = user.getEmail();
         if (existingEmails.contains(userEmail)) {
             throw new IllegalStateException("This email has aready been taken!");
         }
+        user.validateAndSelfCorrect();
         userRepository.save(user);
     }
 

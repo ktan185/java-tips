@@ -3,7 +3,9 @@ package com.javatips.utilities;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Properties;
+import java.util.Set;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -22,31 +24,43 @@ import jakarta.mail.internet.MimeMessage;
 
 public class EmailUtility {
 
+    private static final String MAIL_SENDER = "dailyjavatips@gmail.com";
+    private static final String SUBJECT = "Daily Java Tip";
+
     /**
      * Create a MimeMessage using the parameters provided.
      *
-     * @param toEmailAddress email address of the receiver
+     * @param bccEmailAddresses email addresses of users subscribed to mailing
+     * list.
      * @param fromEmailAddress email address of the sender, the mailbox account
      * @param subject subject of the email
-     * @param content html content of the email
+     * @param markdownContent markdown content of the email.
      * @return the MimeMessage to be used to send email
      * @throws MessagingException - if a wrongly formatted address is
      * encountered.
      */
-    public static MimeMessage createEmail(String toEmailAddress,
+    public static MimeMessage createEmailWithBCC(Set<String> bccEmailAddresses,
             String fromEmailAddress,
             String subject,
-            String content)
+            String markdownContent)
             throws MessagingException {
 
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
-
         MimeMessage email = new MimeMessage(session);
+        email.addRecipient(RecipientType.TO, new InternetAddress("ktdouble@gmail.com"));
         email.setFrom(new InternetAddress(fromEmailAddress));
-        email.addRecipient(RecipientType.TO, new InternetAddress(toEmailAddress));
         email.setSubject(subject);
-        email.setContent(content, "text/html; charset=utf-8");
+
+        // convert markdown from LLM to html.
+        String htmlContent = convertMarkDownToHtmlContent(markdownContent);
+        email.setContent(htmlContent, "text/html; charset=utf-8");
+
+        // Add each recipient to the BCC field (Note that this limits to 400 receipients)
+        for (String bccEmail : bccEmailAddresses) {
+            email.addRecipient(RecipientType.BCC, new InternetAddress(bccEmail));
+        }
+
         return email;
     }
 
@@ -72,9 +86,9 @@ public class EmailUtility {
     }
 
     /**
-     * Send an email from the user's mailbox to its recipient.
+     * Send an email from the user's mailbox to a list of subscribed users.
      *
-     * @param fromEmailAddress Email address to appear in the from: header
+     * @param toEmailAddresses Email addresse of subscribed users.
      * @param toEmailAddress Email address of the recipient
      * @param subject Subject of the email
      * @param bodyText Body text of the email
@@ -83,22 +97,20 @@ public class EmailUtility {
      * @throws IOException If there is an issue with the Gmail API.
      * @throws Exception If there is an issue with authentication.
      */
-    public static Message sendEmail(String toEmailAddress,
-            String fromEmailAddress,
-            String subject,
-            String bodyText)
+    public static Message sendEmail(Set<String> toEmailAddresses, String bodyText)
             throws MessagingException, IOException, Exception {
 
         // Get the authenticated Gmail service
         Gmail service = GmailService.getGmailService();
         // Create the email content
-        MimeMessage email = createEmail(toEmailAddress, fromEmailAddress, subject, bodyText);
-        // Encode and wrap the MIME message into a Gmail message
-        Message message = createMessageWithEmail(email);
+        String subject = SUBJECT + " | " + new Date().toString();
+        MimeMessage email = createEmailWithBCC(toEmailAddresses, MAIL_SENDER, subject, bodyText);
+        //  ncode and wrap the MIME message into a Gmail message
+        var message = createMessageWithEmail(email);
 
         try {
             // Send the email
-            message = service.users().messages().send(fromEmailAddress, message).execute();
+            message = service.users().messages().send(MAIL_SENDER, message).execute();
             System.out.println("Message id: " + message.getId());
             System.out.println(message.toPrettyString());
             return message;
