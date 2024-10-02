@@ -10,8 +10,9 @@ import com.javatips.service.OpenAIService;
 public class Application {
 
     public static void main(String[] args) {
+        // This is for testing, we can refactor later.
         ApplicationContext context = SpringApplication.run(Application.class, args);
         OpenAIService service = context.getBean(OpenAIService.class);
-        service.sendPrompt();
+        service.requestForJavaTip();
     }
 }
