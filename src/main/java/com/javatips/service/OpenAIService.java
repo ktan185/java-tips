@@ -21,7 +21,7 @@ public class OpenAIService {
     public String requestForJavaTip() {
         OpenAI openAI = OpenAI.newBuilder(OPENAI_API_KEY).build();
         ChatClient chatClient = openAI.chatClient();
-        CreateChatCompletionRequest request = generateRequest(OpenAIUtility.getInitialPrompt());
+        CreateChatCompletionRequest request = generateRequest(OpenAIUtility.getPrompt());
         ChatCompletion chatCompletion = chatClient.createChatCompletion(request);
         String response = chatCompletion.choices().get(0).message().content();
         System.out.println(response);

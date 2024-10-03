@@ -25,6 +25,7 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailUtility {
 
     private static final String MAIL_SENDER = "dailyjavatips@gmail.com";
+    private static final String TO_ADDRESS = "ktdouble@gmail.com";
     private static final String SUBJECT = "Daily Java Tip";
 
     /**
@@ -48,7 +49,7 @@ public class EmailUtility {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage email = new MimeMessage(session);
-        email.addRecipient(RecipientType.TO, new InternetAddress("ktdouble@gmail.com"));
+        email.addRecipient(RecipientType.TO, new InternetAddress(TO_ADDRESS));
         email.setFrom(new InternetAddress(fromEmailAddress));
         email.setSubject(subject);
 
@@ -56,7 +57,8 @@ public class EmailUtility {
         String htmlContent = convertMarkDownToHtmlContent(markdownContent);
         email.setContent(htmlContent, "text/html; charset=utf-8");
 
-        // Add each recipient to the BCC field (Note that this limits to 400 receipients)
+        // Add each recipient to the BCC field (Note that this limits to 400
+        // receipients)
         for (String bccEmail : bccEmailAddresses) {
             email.addRecipient(RecipientType.BCC, new InternetAddress(bccEmail));
         }
@@ -103,9 +105,9 @@ public class EmailUtility {
         // Get the authenticated Gmail service
         Gmail service = GmailService.getGmailService();
         // Create the email content
-        String subject = SUBJECT + " | " + new Date().toString();
+        String subject = SUBJECT + " | " + getDateString();
         MimeMessage email = createEmailWithBCC(toEmailAddresses, MAIL_SENDER, subject, bodyText);
-        //  ncode and wrap the MIME message into a Gmail message
+        // ncode and wrap the MIME message into a Gmail message
         var message = createMessageWithEmail(email);
 
         try {
@@ -126,5 +128,20 @@ public class EmailUtility {
         Node document = parser.parse(markdownContent);
         HtmlRenderer renderer = HtmlRenderer.builder().build();
         return renderer.render(document);
+    }
+
+    /**
+     * @return the String representation of the first three parts of
+     * java.utils.Date. I.e. Wed Jun 16.
+     *
+     */
+    private static String getDateString() {
+        String dateString = new Date().toString();
+        String[] tokens = dateString.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            sb.append(tokens[i]).append(" ");
+        }
+        return sb.toString();
     }
 }
