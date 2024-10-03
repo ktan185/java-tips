@@ -5,8 +5,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,9 +33,9 @@ public class CronController {
      * Scheduler. Only the schedular should be allowed to invoke this endpoint.
      */
     @PostMapping
-    public ResponseEntity<?> getDailyJavaTip(@CookieValue(value = "authToken", required = true) String authToken) {
+    public ResponseEntity<?> getDailyJavaTip(@RequestHeader("token") String token) {
 
-        if (!authToken.equals(MASTERKEY)) {
+        if (!token.equals(MASTERKEY)) {
             return ResponseEntity.status(401).build();
         }
         try {
