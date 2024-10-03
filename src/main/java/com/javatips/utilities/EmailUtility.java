@@ -25,6 +25,7 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailUtility {
 
     private static final String MAIL_SENDER = "dailyjavatips@gmail.com";
+    private static final String TO_ADDRESS = "ktdouble@gmail.com";
     private static final String SUBJECT = "Daily Java Tip";
 
     /**
@@ -48,7 +49,7 @@ public class EmailUtility {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage email = new MimeMessage(session);
-        email.addRecipient(RecipientType.TO, new InternetAddress("ktdouble@gmail.com"));
+        email.addRecipient(RecipientType.TO, new InternetAddress(TO_ADDRESS));
         email.setFrom(new InternetAddress(fromEmailAddress));
         email.setSubject(subject);
 
@@ -129,6 +130,11 @@ public class EmailUtility {
         return renderer.render(document);
     }
 
+    /**
+     * @return the String representation of the first three parts of
+     * java.utils.Date. I.e. Wed Jun 16.
+     *
+     */
     private static String getDateString() {
         String dateString = new Date().toString();
         String[] tokens = dateString.split(" ");
