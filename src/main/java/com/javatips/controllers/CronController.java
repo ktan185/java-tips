@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,16 +34,20 @@ public class CronController {
      * Scheduler. Only the schedular should be allowed to invoke this endpoint.
      */
     @PostMapping
-    public ResponseEntity<?> getDailyJavaTip(@RequestHeader("token") String token) {
+    public ResponseEntity<String> getDailyJavaTip(@RequestHeader("token") String token) {
 
         if (!token.equals(MASTERKEY)) {
             return ResponseEntity.status(401).build();
         }
         try {
             createLessonAndMailToUsers();
-            return ResponseEntity.ok().build();
+            return new ResponseEntity<>(
+                    "Lesson created and mailed to users successfully.",
+                    HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+            return new ResponseEntity<>(
+                    "Something went wrong...",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

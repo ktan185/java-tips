@@ -1,6 +1,7 @@
 package com.javatips.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +26,13 @@ public class UserController {
             return ResponseEntity.ok().build();
         } catch (IllegalStateException e) {
             // Return bad request if email has already been used.
-            return ResponseEntity.status(409).build();
+            return new ResponseEntity<>(
+                    "The email has already been signed up!",
+                    HttpStatus.CONFLICT);
         } catch (JavaTipsInvalidModelException e) {
-            return ResponseEntity.status(400).build();
+            return new ResponseEntity<>(
+                    "One of the field values was missing.",
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
