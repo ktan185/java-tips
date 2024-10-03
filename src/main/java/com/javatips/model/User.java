@@ -50,19 +50,19 @@ public class User implements ModelValidator {
     }
 
     private void correctFields() {
-       // Standardise how data is persisted.
-       String firstNameCorrected = correctName(firstName);
-       String lastNameCorrected = correctName(lastName); 
-       String emailCorrected = email.toLowerCase();
-       this.firstName = firstNameCorrected;
-       this.lastName = lastNameCorrected;
-       this.email = emailCorrected;
+        // Standardise how data is persisted.
+        String firstNameCorrected = correctName(firstName);
+        String lastNameCorrected = correctName(lastName);
+        String emailCorrected = email.toLowerCase();
+        this.firstName = firstNameCorrected;
+        this.lastName = lastNameCorrected;
+        this.email = emailCorrected;
     }
 
     private String correctName(String name) {
         StringBuilder result = new StringBuilder();
         result.append(Character.toTitleCase(name.charAt(0)))
-              .append(name.substring(1));
+                .append(name.substring(1).toLowerCase());
         return result.toString();
     }
 }
