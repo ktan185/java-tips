@@ -38,14 +38,17 @@ public class CronController {
         if (!authToken.equals(MASTERKEY)) {
             return ResponseEntity.status(401).build();
         }
-
         try {
-            Set<String> mailingList = userService.getAllUserEmails();
-            String dailyJavaTip = openAIService.requestForJavaTip();
-            EmailUtility.sendEmail(mailingList, dailyJavaTip);
+            createLessonAndMailToUsers();
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
+    }
+
+    private void createLessonAndMailToUsers() throws Exception {
+        Set<String> mailingList = userService.getAllUserEmails();
+        String dailyJavaTip = openAIService.requestForJavaTip();
+        EmailUtility.sendEmail(mailingList, dailyJavaTip);
     }
 }
