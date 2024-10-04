@@ -8,6 +8,7 @@
     justify-content: center;
     align-items: center;
     padding: 1rem 0;
+    transition: opacity 0.3s ease-out;
 }
 
 /* Card styling */
@@ -34,6 +35,20 @@
     padding: 0.5rem 1rem;
     box-sizing: border-box;
     transition: background-color 0.3s ease;
+}
+
+.alert {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    font-size: 1rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.visible {
+    opacity: 1;
 }
 
 

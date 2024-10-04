@@ -38,7 +38,7 @@
 .fadeIn {
      opacity: 0; /* Start transparent */
      animation: fadeIn 2s ease-out forwards;
-     animation-delay: 4s; /* Delay matches the duration of the h1 animation */   
+     animation-delay: 4s;
 }
 
 /* Keyframes for fading in with pixel movement */
