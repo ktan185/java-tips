@@ -1,0 +1,54 @@
+.cardContainer {
+    position: fixed;
+    bottom: 150px;
+    left: 0;
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+    transition: opacity 0.3s ease-out;
+}
+
+/* Card styling */
+.card {
+    width: 55rem;
+    text-align: left;
+    justify-items: center;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Fields container */
+.fields {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%; 
+}
+
+.button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+.alert {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    font-size: 1rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.visible {
+    opacity: 1;
+}
+
+
