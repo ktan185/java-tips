@@ -13,9 +13,9 @@ function App() {
           height: '100vh',
           fontFamily: "Pixelify Sans",
           paddingTop: '75px',
-          justifyContent: 'center', // Centers horizontally
+          justifyContent: 'center',
           justifySelf: 'center',
-          alignItems: 'center', // Centers vertically
+          alignItems: 'center',
         }}>
       <Home />
     </div>

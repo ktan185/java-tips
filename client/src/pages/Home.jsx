@@ -7,7 +7,7 @@ export const Home = () => {
             <h1>Daily Java Tips</h1>
             <div>
                 <p><i>Sign up to our mailing list to receive tips about the Java programming language daily!</i></p>
-                {/* <SubscriptionCard /> */}
+                <SubscriptionCard />
             </div>
         </div>
     )
