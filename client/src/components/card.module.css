@@ -1,0 +1,22 @@
+.cardContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.card {
+    text-align: left;
+}
+
+.userName {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.button {
+    display: flex;
+    justify-content: right;
+}
+

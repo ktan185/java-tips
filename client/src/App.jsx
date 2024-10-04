@@ -1,18 +1,24 @@
-import { useState } from 'react'
-import './App.css'
-import { SubscriptionCard } from './components/card'
+import { Home } from "./pages/home"
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>Daily Java Tips</h1>
-      <div className="card">
-        <p>Sign up to our mailing list to receive tips about the Java programming language daily!</p>
-          <SubscriptionCard />
-      </div>
-    </>
+    <div
+      style={{
+          backgroundImage: "url('https://cdn.dribbble.com/users/979555/screenshots/3375963/media/68e340acc70642614713b63652a2db8c.gif')",
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          width: '100vw',
+          height: '100vh',
+          fontFamily: "Pixelify Sans",
+          paddingTop: '75px',
+          justifyContent: 'center', // Centers horizontally
+          justifySelf: 'center',
+          alignItems: 'center', // Centers vertically
+        }}>
+      <Home />
+    </div>
   )
 }
 
