@@ -24,7 +24,6 @@ public class EmailUtility {
 
     private static final String MAIL_SENDER = "dailyjavatips@gmail.com";
     private static final String TO_ADDRESS = "ktdouble@gmail.com";
-    private static final String SUBJECT = "Daily Java Tip";
 
     /**
      * Create a MimeMessage using the parameters provided.
@@ -75,14 +74,14 @@ public class EmailUtility {
             throws MessagingException, IOException, Exception {
 
         // Create the email content
-        String subject = SUBJECT + " | " + getDateString();
+        String subject = createSubject();
         Session session = configurePropertiesAndGetSession(fromEmail, token);
         Message message = createEmailWithBCC(toEmailAddresses, MAIL_SENDER, subject, bodyText, session);
         try {
             Transport.send(message);
             System.out.println("Emails sent successfully!");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            System.err.println("Something went wrong when sending emails...");
         }
     }
 
@@ -98,12 +97,13 @@ public class EmailUtility {
      * java.utils.Date. I.e. Wed Jun 16.
      *
      */
-    private static String getDateString() {
+    private static String createSubject() {
         String dateString = new Date().toString();
         String[] tokens = dateString.split(" ");
         StringBuilder sb = new StringBuilder();
+        sb.append("Daily Java Tips |");
         for (int i = 0; i < 3; i++) {
-            sb.append(tokens[i]).append(" ");
+            sb.append(" ").append(tokens[i]);
         }
         return sb.toString();
     }
