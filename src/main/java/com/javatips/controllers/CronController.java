@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.javatips.service.EmailService;
 import com.javatips.service.OpenAIService;
 import com.javatips.service.UserService;
-import com.javatips.utilities.EmailUtility;
 
 @RestController
 @RequestMapping("tips")
@@ -27,6 +27,9 @@ public class CronController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    EmailService emailService;
 
     /**
      * This endpoint handles the creation and sending of Java tips to subscribed
@@ -54,6 +57,6 @@ public class CronController {
     private void createLessonAndMailToUsers() throws Exception {
         Set<String> mailingList = userService.getAllUserEmails();
         String dailyJavaTip = openAIService.requestForJavaTip();
-        EmailUtility.sendEmail(mailingList, dailyJavaTip);
+        emailService.sendMail(mailingList, dailyJavaTip);
     }
 }

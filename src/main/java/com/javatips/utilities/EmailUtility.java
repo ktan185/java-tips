@@ -1,8 +1,6 @@
 package com.javatips.utilities;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
@@ -11,14 +9,14 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.model.Message;
-import com.javatips.service.GmailService;
-
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
@@ -40,50 +38,24 @@ public class EmailUtility {
      * @throws MessagingException - if a wrongly formatted address is
      * encountered.
      */
-    public static MimeMessage createEmailWithBCC(Set<String> bccEmailAddresses,
+    public static Message createEmailWithBCC(Set<String> bccEmailAddresses,
             String fromEmailAddress,
             String subject,
-            String markdownContent)
+            String markdownContent,
+            Session session)
             throws MessagingException {
 
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-        MimeMessage email = new MimeMessage(session);
-        email.addRecipient(RecipientType.TO, new InternetAddress(TO_ADDRESS));
-        email.setFrom(new InternetAddress(fromEmailAddress));
-        email.setSubject(subject);
-
-        // convert markdown from LLM to html.
+        InternetAddress[] toAddresses = getBccAddresses(bccEmailAddresses);
         String htmlContent = convertMarkDownToHtmlContent(markdownContent);
-        email.setContent(htmlContent, "text/html; charset=utf-8");
 
-        // Add each recipient to the BCC field (Note that this limits to 400
-        // receipients)
-        for (String bccEmail : bccEmailAddresses) {
-            email.addRecipient(RecipientType.BCC, new InternetAddress(bccEmail));
-        }
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(fromEmailAddress));
+        message.setRecipient(RecipientType.TO, new InternetAddress(TO_ADDRESS));
+        message.setRecipients(RecipientType.BCC, toAddresses);
+        message.setSubject(subject);
+        // convert markdown from LLM to html.
+        message.setContent(htmlContent, "text/html; charset=utf-8");
 
-        return email;
-    }
-
-    /**
-     * Create a message from an email.
-     *
-     * @param emailContent Email to be set to raw of message
-     * @return a message containing a base64url encoded email
-     * @throws IOException - if service account credentials file not found.
-     * @throws MessagingException - if a wrongly formatted address is
-     * encountered.
-     */
-    public static Message createMessageWithEmail(MimeMessage emailContent)
-            throws MessagingException, IOException {
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        emailContent.writeTo(buffer);
-        byte[] bytes = buffer.toByteArray();
-        String encodedEmail = Base64.getUrlEncoder().encodeToString(bytes);
-        Message message = new Message();
-        message.setRaw(encodedEmail);
         return message;
     }
 
@@ -99,27 +71,18 @@ public class EmailUtility {
      * @throws IOException If there is an issue with the Gmail API.
      * @throws Exception If there is an issue with authentication.
      */
-    public static Message sendEmail(Set<String> toEmailAddresses, String bodyText)
+    public static void sendEmail(Set<String> toEmailAddresses, String bodyText, String fromEmail, String token)
             throws MessagingException, IOException, Exception {
 
-        // Get the authenticated Gmail service
-        Gmail service = GmailService.getGmailService();
         // Create the email content
         String subject = SUBJECT + " | " + getDateString();
-        MimeMessage email = createEmailWithBCC(toEmailAddresses, MAIL_SENDER, subject, bodyText);
-        // ncode and wrap the MIME message into a Gmail message
-        var message = createMessageWithEmail(email);
-
+        Session session = configurePropertiesAndGetSession(fromEmail, token);
+        Message message = createEmailWithBCC(toEmailAddresses, MAIL_SENDER, subject, bodyText, session);
         try {
-            // Send the email
-            message = service.users().messages().send(MAIL_SENDER, message).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
-            return message;
-        } catch (GoogleJsonResponseException e) {
-            // Handle API errors
-            System.err.println("Failed to send email: " + e.getDetails());
-            throw e;
+            Transport.send(message);
+            System.out.println("Emails sent successfully!");
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -143,5 +106,29 @@ public class EmailUtility {
             sb.append(tokens[i]).append(" ");
         }
         return sb.toString();
+    }
+
+    private static Session configurePropertiesAndGetSession(String username, String password) {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true"); // use TLS
+        return Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+    }
+
+    private static InternetAddress[] getBccAddresses(Set<String> bccEmailAddresses) throws AddressException {
+        int n = bccEmailAddresses.size();
+        InternetAddress[] toAddresses = new InternetAddress[n];
+        int i = 0;
+        for (String email : bccEmailAddresses) {
+            toAddresses[i++] = new InternetAddress(email);
+        }
+        return toAddresses;
     }
 }
